@@ -52,11 +52,11 @@ def input_console_read():
         # Verifica a resposta do usuário
         if console == "1":  # Se o usuário escolher sim,
             console = ""  # a opção de console é vazia
-            break  # Sai do loop
+            break  # O loop será interrompido
 
         elif console == "2":  # Se o usuário escolher não,
             console = "--noconsole"  # a opção de console é "--noconsole"
-            break  # Sai do loop
+            break  # O loop será interrompido
 
         else:  # Se o usuário fornecer uma resposta inválida,
             print("Resposta inválida\n")  # imprime uma mensagem de erro
@@ -65,20 +65,32 @@ def input_console_read():
 
 
 def input_name_exe():
+    import re
 
     while True:  # Loop infinito até que o usuário forneça um nome válido para o arquivo executável
 
         program = input("Digite um nome para o arquivo executável"  # Solicita ao usuário um nome para o arquivo executável
                         " ou "
-                        "pressione Enter para manter o nome padrão:\n")
+                        "pressione Enter para manter o nome padrão:\n")  # pressione Enter para manter o nome padrão
         print("")
 
+        unallowed = '[@\/:*?"<>|]'  # Caracteres especiais não permitidos
+
+        for character in unallowed:
+
+            if character in program:  # Verifica se o nome do arquivo executável contém algum caractere especial não permitido
+                print(  # Exibe uma mensagem de erro se o nome do arquivo contiver algum caractere não permitido:
+                    f"Proibido usar este tipo de caractere especial ({character}).")
+                continue
+
         if not program:  # Verifica se o usuário pressionou Enter sem fornecer um nome
-            break  # Se sim, sai do loop
+            break  # Se sim, o loop será interrompido
 
         else:  # Se não, adiciona o nome ao comando de criação do executável
+            program = re.sub(  # Substitui os espaços no nome por traços
+                " ", "-", program)
             program = f"--name={program}"
-            break  # Sai do loop
+            break  # O loop será interrompido
 
     # Retorna o nome do arquivo executável
     return program
@@ -95,11 +107,11 @@ def input_onefile_exe():
 
         if one_file == "1":  # Se o usuário escolher sim,
             one_file = "--onefile"  # a opção de console é vazia
-            break  # Sai do loop
+            break  # O loop será interrompido
 
         elif one_file == "2":  # Se o usuário escolher não,
             one_file = ""  # a opção de console é "--noconsole"
-            break  # Sai do loop
+            break  # O loop será interrompido
 
         else:  # Se o usuário fornecer uma resposta inválida,
             print("Resposta inválida\n")  # imprime uma mensagem de erro
