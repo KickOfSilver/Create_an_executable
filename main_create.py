@@ -1,10 +1,10 @@
-import subprocess
-import os
-import time
 
+# Created by KickOfSilver
+# https://github.com/KickOfSilver/Create_an_executable
 
-def main_run(  # Created by KickOfSilver
-):
+def main_run():
+    import os
+    import re
 
     os.system("cls")  # Limpa o terminal
     requirements_check()  # Instala as dependências do pyinstaller
@@ -13,15 +13,13 @@ def main_run(  # Created by KickOfSilver
     console = input_console_read()  # Recebe a opção de mostra o console
     name = input_name_exe()  # Recebe o nome para o executável
     one_file = input_onefile_exe()  # Recebe a opção de combinar os arquivos em um só
-
-    icon_copy = copy_icon_path()  # Copia o ícone para a pasta do projeto
-    icon_use = use_icon_path()  # Usa o ícone na criação do executável
+    icon_add = add_icon_path()  # Copia o ícone para a pasta do projeto
 
     # Cria a string de comando para o pyinstaller com base nas opções fornecidas pelo usuário
-    comando = f"pyinstaller {console} {name} {icon_copy} {icon_use} {one_file} {file}"
+    comando = f"pyinstaller {console} {name} {icon_add} {one_file} {file}"
 
     # Substitui dois espaços em branco por um único espaço
-    comando = comando.replace("  ", " ")
+    comando = re.sub(r"\s+", " ", comando)
     os.system(comando)  # Executa o comando no terminal
 
 
@@ -88,7 +86,7 @@ def input_name_exe():
 
         else:  # Se não, adiciona o nome ao comando de criação do executável
             program = re.sub(  # Substitui os espaços no nome por traços
-                " ", "-", program)
+                "[ ]", "-", program)
             program = f"--name={program}"
             break  # O loop será interrompido
 
@@ -106,11 +104,11 @@ def input_onefile_exe():
         print("")
 
         if one_file == "1":  # Se o usuário escolher sim,
-            one_file = "--onefile"  # a opção de console é vazia
+            one_file = "--onefile"  # a opção de console é "--onefile"
             break  # O loop será interrompido
 
         elif one_file == "2":  # Se o usuário escolher não,
-            one_file = ""  # a opção de console é "--noconsole"
+            one_file = ""  # a opção de one_file é vazia
             break  # O loop será interrompido
 
         else:  # Se o usuário fornecer uma resposta inválida,
@@ -119,36 +117,42 @@ def input_onefile_exe():
     return one_file
 
 
-def copy_icon_path():
+def add_icon_path():
+    import os
 
-    path_icon = "icon/icon.ico"  # Caminho para o ícone
-    check_path = os.path.exists(path_icon)  # Verifica se o caminho existe
+    path_one = "icon.ico"  # Caminho para o ícone
+    path_two = "icon/icon.ico"  # Caminho para o ícone
 
-    if check_path == True:  # Se o caminho existe, adiciona o ícone ao executável
-        icon = (  # Se o caminho não existe, não adiciona o ícone
-            f"--add-data={path_icon};.")
-    else:
-        icon = ""  # manda a string vazia
+    if os.path.exists(path_one) == True:  # Verifica se o caminho para o ícone existe
+        icon = (  # Define as infomaçoes do ícone
+            f"--add-data={path_one};. --icon={path_one}")
 
-    return icon  # Retorna a opção de ícone
-
-
-def use_icon_path():
-
-    path_icon = "icon/icon.ico"  # Caminho para o ícone
-    check_path = os.path.exists(path_icon)  # Verifica se o caminho existe
-
-    if check_path == True:  # Se o caminho existe, usa o ícone no executável
-        icon = (  # Se o caminho não existe, não usa o ícone
-            f"--icon={path_icon}")
+    elif os.path.exists(path_two) == True:  # verifica o segundo caminho
+        icon = (  # Define as infomaçoes do ícone
+            f"--add-data={path_two};. --icon={path_two}")
 
     else:
-        icon = ""  # manda a string vazia
+        while True:  # Se nenhum dos caminhos existir, entra em um loop para solicitar um caminho válido ou ignorar
+            print("O ícone não foi encontrado.")
+            path_check = input(  # Solicita o caminho do arquivo ícone ou pressionar Enter para ignorar
+                "Por favor, forneça o caminho do arquivo ou pressione Enter para ignorar.")
+
+            if os.path.exists(path_check) == True:  # Verifica se o caminho existe
+                icon = (  # Define as infomaçoes do ícone
+                    f"--add-data={path_check};. --icon={path_check}")
+                break  # O loop será interrompido
+
+            if not path_check:  # Se o usuário pressionar Enter, define a opção de ícone como uma string vazia e sai do loop
+                icon = ""  # a opção de icon é vazia
+                break  # O loop será interrompido
 
     return icon  # Retorna a opção de ícone
 
 
 def requirements_check():
+    import os
+    import time
+    import subprocess
 
     packages = subprocess.check_output(  # Obtém a lista de pacotes instalados usando o pip
         ["pip", "freeze"]).decode().split("\n")
