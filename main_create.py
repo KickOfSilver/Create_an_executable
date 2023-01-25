@@ -120,6 +120,13 @@ def input_onefile_exe():
 def add_icon_path():
     import os
 
+
+
+    for root, dirs, files in os.walk(".", topdown=False):
+        for name in files:
+            if "icon.ico" in name:
+                print(os.path.join(root, name))
+
     path_one = "icon.ico"  # Caminho para o ícone
     path_two = "icon/icon.ico"  # Caminho para o ícone
 
